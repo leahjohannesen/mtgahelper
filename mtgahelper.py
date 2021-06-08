@@ -45,7 +45,7 @@ class MTGAHelper():
         
     def show_stats(self, code, n_packs):
         self.lm.refresh_library()
-        rares, mythics = self.get_card_stuff()
+        rares, mythics = self.get_card_stuff(code)
         self.stm.show_summary(code, n_packs, rares, mythics)
 
     def get_card_stuff(self, code):

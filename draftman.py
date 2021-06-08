@@ -39,8 +39,8 @@ class DraftManager():
         print(f'Parsing {code} draft')
         gamestuff = draft['ModuleInstanceData']['WinLossGate']
         cardstuff = draft['CardPool']
-        sm = SetManager(code)
-        fullcards = [sm.get_card_data(card) for card in cardstuff]
+        sm = SetManager()
+        fullcards = [sm.get_card_data(code, card) for card in cardstuff]
         rares, myths = 0, 0
         for card in fullcards:
             if card is None:

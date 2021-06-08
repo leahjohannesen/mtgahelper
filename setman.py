@@ -22,9 +22,9 @@ class SetManager():
     def get_cardlist(self, code):
         return self.cards[code]
 
-    def get_card_data(self, aid):
+    def get_card_data(self, code, aid):
         try:
-            return self.cards[str(aid)]
+            return self.cards[code][str(aid)]
         except:
             print(f'ERROR LOOKING UP CARD ID - {aid}')
 
