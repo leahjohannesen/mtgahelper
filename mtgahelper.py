@@ -24,38 +24,32 @@ COLORS = {
 }
     
 class MTGAHelper():
-    def __init__(self, code):
-        self.code = self.validate_code(code)
-        self.sm = SetManager(code)
+    def __init__(self):
+        self.sm = SetManager()
         self.dm = DraftManager()
         self.lm = LibraryManager()
         self.stm = StatsManager()
-        
-    def validate_code(self, code):
-        if code in ['thb', 'znr', 'eld', 'iko', 'khm', 'stx', 'sta']:
-            return code
-        raise Exception(f'Bad set code ({code}), please try again')
 
     def finish_draft(self):
         self.dm.record_draft()
         
-    def show_draft_history(self):
-        self.stm.show_history(self.code)
+    def show_draft_history(self, code):
+        self.stm.show_history(code)
 
-    def show_cards(self):
+    def show_cards(self, code):
         self.lm.refresh_library()
-        rares, mythics = self.get_card_stuff()
+        rares, mythics = self.get_card_stuff(code)
         self.display_cards(rares, 'RARES')
         self.display_cards(mythics, 'MYTHS')
         return
         
-    def show_stats(self, n_packs):
+    def show_stats(self, code, n_packs):
         self.lm.refresh_library()
         rares, mythics = self.get_card_stuff()
-        self.stm.show_summary(self.code, n_packs, rares, mythics)
+        self.stm.show_summary(code, n_packs, rares, mythics)
 
-    def get_card_stuff(self):
-        all_cards = self.sm.get_cardlist()
+    def get_card_stuff(self, code):
+        all_cards = self.sm.get_cardlist(code)
         rares = []
         mythics = []
         for i, (aid, card) in enumerate(all_cards.items()):
@@ -122,9 +116,5 @@ class MTGAHelper():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        raise Exception('Please specify a set code')
-    code = sys.argv[1]
-    print(f'Loading draft helper for set {code}')
-    mh = MTGAHelper(code)
+    mh = MTGAHelper()
     
