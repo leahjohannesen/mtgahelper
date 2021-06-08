@@ -1,10 +1,11 @@
 import re
 import json
 
-LOG_LOCATION = 'C:/Users/Logan/AppData/LocalLow/Wizards Of The Coast/MTGA/Player.log'
+LOG_LOCATION = 'C:/Users/zbebb/AppData/LocalLow/Wizards Of The Coast/MTGA/Player.log'
+#LOG_LOCATION = 'data/draft_game_log.log'
 
 def load_log_kw(kw):
-    with open(LOG_LOCATION) as f:
+    with open(LOG_LOCATION, encoding='utf-8') as f:
         blah = f.read()
     matches = list(re.finditer(kw, blah))
     # find index of /n and check for request or payload 

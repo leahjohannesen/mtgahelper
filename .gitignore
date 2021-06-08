@@ -1,3 +1,4 @@
-*.log
-*.pkl
-data/*
+data/*.pkl
+data/*.log
+data/*.json
+__pycache__/

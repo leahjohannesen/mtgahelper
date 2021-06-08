@@ -3,11 +3,12 @@ import json
 import requests
 import os
 from math import ceil
-
-from libraryman import LibraryManager
-from statsman import StatsManager
-from setman import SetManager
 from itertools import zip_longest
+
+from draftman import DraftManager
+from libraryman import LibraryManager
+from setman import SetManager
+from statsman import StatsManager
 
 import sys
 
@@ -22,17 +23,24 @@ COLORS = {
     'M': 'Misc',
 }
     
-class DraftHelper():
+class MTGAHelper():
     def __init__(self, code):
         self.code = self.validate_code(code)
         self.sm = SetManager(code)
-        self.stm = StatsManager(code)
+        self.dm = DraftManager()
         self.lm = LibraryManager()
+        self.stm = StatsManager()
         
     def validate_code(self, code):
-        if code in ['thb', 'znr']:
+        if code in ['thb', 'znr', 'eld', 'iko', 'khm', 'stx', 'sta']:
             return code
         raise Exception(f'Bad set code ({code}), please try again')
+
+    def finish_draft(self):
+        self.dm.record_draft()
+        
+    def show_draft_history(self):
+        self.stm.show_history(self.code)
 
     def show_cards(self):
         self.lm.refresh_library()
@@ -41,19 +49,16 @@ class DraftHelper():
         self.display_cards(mythics, 'MYTHS')
         return
         
-    def show_results(self):
-        self.stm.show_stats_table()
-        
     def show_stats(self, n_packs):
         self.lm.refresh_library()
         rares, mythics = self.get_card_stuff()
-        self.stm.show_summary(rares, mythics, n_packs)
+        self.stm.show_summary(self.code, n_packs, rares, mythics)
 
     def get_card_stuff(self):
-        all_cards = self.sm.get_cards_for_set()
+        all_cards = self.sm.get_cardlist()
         rares = []
         mythics = []
-        for i, card in enumerate(all_cards):
+        for i, (aid, card) in enumerate(all_cards.items()):
             card_data = self.get_card_data(card)
             if card_data['rarity'] == 'rare':
                 rares.append(card_data)
@@ -108,7 +113,12 @@ class DraftHelper():
     def format_card(self, card):
         if card is None:
             return ' ' * COL_WIDTH
-        return card['name'][:COL_WIDTH - 2].ljust(COL_WIDTH - 1) + str(card['count'])
+        n_cards = card['count']
+        if n_cards == 4:
+            cardname = '-'*2 + card['name'][:COL_WIDTH - 5].ljust(COL_WIDTH - 1 - 2, '-')
+        else:
+            cardname = card['name'][:COL_WIDTH - 4].ljust(COL_WIDTH - 1)
+        return cardname + str(n_cards)
 
 
 if __name__ == '__main__':
@@ -116,5 +126,5 @@ if __name__ == '__main__':
         raise Exception('Please specify a set code')
     code = sys.argv[1]
     print(f'Loading draft helper for set {code}')
-    dh = DraftHelper(code)
+    mh = MTGAHelper(code)
     
